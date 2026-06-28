@@ -59,6 +59,20 @@ http://localhost:3000 에서 확인 가능
    ```
 3. 자동 배포 완료
 
+## GitHub Pages 배포 (데모용)
+
+이 프로젝트는 정적 내보내기(`output: 'export'`)로 GitHub Pages에 배포됩니다.
+
+1. 레포 Settings → Pages → **Source**를 "GitHub Actions"로 변경
+2. `main` 브랜치에 푸시하면 자동 빌드 + 배포됨
+3. 배포 후 사이트: https://ahagoitda.github.io/weather/
+
+**주의**: 
+- LLM 기반 피드백은 API 키가 필요하므로 GitHub Pages에서는 규칙 기반 피드백만 동작합니다.
+- 완전한 데모는 Vercel 추천.
+
+## 프로젝트 구조
+
 ## 프로젝트 구조
 
 ```

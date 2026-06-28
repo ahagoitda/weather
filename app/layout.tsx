@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   title: '장마 전선 실험실 | 2026 기상·기후 AI 해커톤',
   description: '한반도 지도 위에서 저기압을 직접 움직이고 강도를 조절하며 장마 강수 패턴을 실시간으로 실험해보세요. 기상청 KMA 데이터 기반 교육용 인터랙티브 콘텐츠.',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/weather/favicon.ico',
   },
 };
 
