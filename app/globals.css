@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+:root {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  font-family: var(--font-geist-sans), var(--font-noto-kr), system-ui, sans-serif;
+}
+
+/* Leaflet 커스텀 스타일 */
+.leaflet-container {
+  background: #f1f5f9;
+}
+
+.low-pressure-marker {
+  transition: transform 0.1s cubic-bezier(0.23, 1.0, 0.32, 1);
+}
+
+/* 슬라이더 스타일 개선 */
+input[type="range"] {
+  accent-color: #1e40af;
+}
+
+/* 반응형 최적화 */
+@media (max-width: 768px) {
+  .leaflet-container {
+    min-height: 380px;
+  }
+}
+
+/* 교육적 피드백 박스 강조 */
+.feedback-summary {
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+/* 차트 툴팁 */
+.recharts-tooltip {
+  font-size: 13px;
+}
