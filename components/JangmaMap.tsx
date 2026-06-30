@@ -11,17 +11,22 @@
  * - 모바일 터치 대응
  */
 
-import { useEffect, useMemo } from 'react';
-import { MapContainer, TileLayer, Marker, Polyline, Circle, useMapEvents } from 'react-leaflet';
+import { useMemo } from 'react';
+import { MapContainer, TileLayer, Marker, Polyline, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useJangmaStore } from '../store/useJangmaStore';
 import { getRainColor, REFERENCE_POINTS } from '../lib/simulation';
 
+// next.config.ts와 동일한 basePath (정적 자산은 수동 prefix 필요)
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? '/weather';
+
 // Leaflet 기본 아이콘 문제 해결 (Next.js 번들러 환경)
+// 외부 CDN 대신 public/leaflet 에 번들된 로컬 자산을 사용해 오프라인 환경에서도 동작하게 한다.
 const DefaultIcon = L.icon({
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconUrl: `${BASE_PATH}/leaflet/marker-icon.png`,
+  iconRetinaUrl: `${BASE_PATH}/leaflet/marker-icon-2x.png`,
+  shadowUrl: `${BASE_PATH}/leaflet/marker-shadow.png`,
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
@@ -63,17 +68,6 @@ function createLowPressureIcon(isDragging: boolean) {
   });
 }
 
-// 지도 이벤트 핸들러 (마커 드래그 감지)
-function MapEventHandler({ onPositionChange }: { onPositionChange: (lat: number, lng: number) => void }) {
-  const store = useJangmaStore();
-
-  useMapEvents({
-    // 필요 시 지도 클릭으로 위치 이동 기능 확장 가능
-  });
-
-  return null;
-}
-
 interface JangmaMapProps {
   className?: string;
 }
@@ -109,13 +103,6 @@ export default function JangmaMap({ className = '' }: JangmaMapProps) {
         const pos = marker.getLatLng();
         setPosition(pos.lat, pos.lng);
         setDragging(false);
-      },
-      drag: (e: L.LeafletEvent) => {
-        // 실시간 위치 피드백은 성능 위해 선택적으로
-        const marker = e.target as L.Marker;
-        const pos = marker.getLatLng();
-        // 드래그 중에도 미세 업데이트 원할 경우:
-        // setPosition(pos.lat, pos.lng); // ← 필요시 주석 해제 (성능 비용 있음)
       },
     }),
     [setPosition, setDragging]
@@ -276,8 +263,6 @@ export default function JangmaMap({ className = '' }: JangmaMapProps) {
           draggable={true}
           eventHandlers={markerEventHandlers}
         />
-        
-        <MapEventHandler onPositionChange={setPosition} />
       </MapContainer>
 
       {/* 지도 위 오버레이 정보 */}

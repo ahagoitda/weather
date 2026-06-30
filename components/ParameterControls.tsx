@@ -81,7 +81,7 @@ export default function ParameterControls() {
                 max={slider.max}
                 step={slider.step}
                 value={value}
-                onChange={(e) => setSliderValue(slider.key as any, parseFloat(e.target.value))}
+                onChange={(e) => setSliderValue(slider.key, parseFloat(e.target.value))}
                 className="w-full accent-blue-700 cursor-pointer"
               />
 

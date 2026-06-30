@@ -12,11 +12,18 @@
 import { useEffect, useState } from 'react';
 import { useJangmaStore } from '../store/useJangmaStore';
 import { generateEducationalFeedback } from '../lib/feedback';
+import { FeedbackResponse } from '../lib/types';
 import { Lightbulb, RefreshCw } from 'lucide-react';
+
+// 정적 배포(GitHub Pages)에서는 서버리스 API route가 존재하지 않으므로,
+// 생성형 LLM 호출은 빌드 시 NEXT_PUBLIC_LLM_ENABLED=true 로 명시적으로 켤 때만 노출한다.
+const LLM_ENABLED = process.env.NEXT_PUBLIC_LLM_ENABLED === 'true';
+// basePath는 next/link에만 자동 적용되고 fetch에는 적용되지 않으므로 직접 prefix 한다.
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? '/weather';
 
 export default function FeedbackPanel() {
   const { params, averageRainfall, maxRainfall, lastUpdated } = useJangmaStore();
-  const [feedback, setFeedback] = useState<any>(null);
+  const [feedback, setFeedback] = useState<FeedbackResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   // 파라미터가 바뀔 때마다 피드백 생성 (디바운스 없이 빠르게 반응)
@@ -34,19 +41,19 @@ export default function FeedbackPanel() {
   const fetchRealFeedback = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('/api/feedback', {
+      const res = await fetch(`${BASE_PATH}/api/feedback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ params, averageRainfall, maxRainfall }),
       });
       if (res.ok) {
-        const data = await res.json();
+        const data = (await res.json()) as FeedbackResponse;
         setFeedback(data);
       } else {
         // 실패 시 로컬 피드백 유지
         console.warn('LLM fallback used');
       }
-    } catch (e) {
+    } catch {
       console.warn('LLM request failed, using local feedback');
     } finally {
       setIsLoading(false);
@@ -70,19 +77,23 @@ export default function FeedbackPanel() {
           </div>
           <div>
             <span className="font-semibold text-slate-900">AI 교육 피드백</span>
-            <span className="ml-2 text-[10px] px-2 py-px rounded bg-amber-100 text-amber-700 font-medium">즉시 해석</span>
+            <span className="ml-2 text-[10px] px-2 py-px rounded bg-amber-100 text-amber-700 font-medium">
+              {LLM_ENABLED ? '서러게이트 + LLM' : '서러게이트 모델'}
+            </span>
           </div>
         </div>
-        
-        {/* 실제 LLM 사용 버튼 (선택) */}
-        <button
-          onClick={fetchRealFeedback}
-          disabled={isLoading}
-          className="text-xs flex items-center gap-1 px-2.5 py-1 rounded-md border border-slate-200 hover:bg-slate-50 disabled:opacity-50"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-          {isLoading ? '생성 중...' : '더 정확한 해석 요청'}
-        </button>
+
+        {/* 생성형 LLM 보강 (서버 배포 시에만 노출) */}
+        {LLM_ENABLED && (
+          <button
+            onClick={fetchRealFeedback}
+            disabled={isLoading}
+            className="text-xs flex items-center gap-1 px-2.5 py-1 rounded-md border border-slate-200 hover:bg-slate-50 disabled:opacity-50"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+            {isLoading ? '생성 중...' : '생성형 AI 해석 요청'}
+          </button>
+        )}
       </div>
 
       {/* 메인 요약 (가장 중요) */}

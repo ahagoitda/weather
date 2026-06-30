@@ -24,7 +24,13 @@ export function generateEducationalFeedback(
   avgRain: number,
   maxRain: number
 ): EducationalFeedback {
-  const { strength, speed, sst, lat, lng } = params;
+  const { strength, speed, sst, lat } = params;
+
+  // 서러게이트 모델이 산출한 실제 강수 수치 (피드백에 직접 반영)
+  const avg = Math.round(avgRain * 10) / 10;
+  const max = Math.round(maxRain * 10) / 10;
+  const rainLevel =
+    avg < 5 ? '약한' : avg < 15 ? '보통 수준의' : avg < 30 ? '강한' : '극한 수준의';
 
   // 상황 분류
   const isStrong = strength > 72;
@@ -32,13 +38,10 @@ export function generateEducationalFeedback(
   const isSlow = speed < 28;
   const isFast = speed > 68;
   const isWarmSST = sst > 27.0;
-  const isColdSST = sst < 24.5;
 
   // 위치 판단 (한반도 기준)
   const isSouth = lat < 35.0;
   const isNorth = lat > 37.0;
-  const isWest = lng < 126.8;
-  const isEast = lng > 128.5;
 
   // 가장 비슷한 역사적 사례 찾기 (간단 매칭)
   let closestCase = HISTORICAL_CASES[0];
@@ -60,17 +63,17 @@ export function generateEducationalFeedback(
 
   // === SUMMARY: 가장 핵심 메시지 (2~3문장) ===
   if (isStrong && isSlow && isWarmSST) {
-    summary = `매우 강한 저기압(강도 ${strength})이 느리게 움직이고 있으며 해수면온도도 ${sst.toFixed(1)}°C로 높습니다. 이 조건은 남쪽에서 공급되는 풍부한 수증기가 장시간 같은 지역에 머무르며 극한의 집중호우를 일으키는 전형적인 '정체형 장마' 패턴입니다.`;
+    summary = `매우 강한 저기압(강도 ${strength})이 느리게 움직이고 있으며 해수면온도도 ${sst.toFixed(1)}°C로 높습니다. 이 조건은 남쪽에서 공급되는 풍부한 수증기가 장시간 같은 지역에 머무르며 극한의 집중호우를 일으키는 전형적인 '정체형 장마' 패턴으로, 모델은 평균 ${avg}mm/h·최대 ${max}mm/h의 강수를 예측합니다.`;
   } else if (isStrong && isFast) {
-    summary = `강한 전선이 빠르게 이동하고 있습니다. 강도 ${strength} 수준의 저기압이 ${speed}의 속도로 이동하면 한 지역에는 비교적 짧은 시간 동안 강한 비가 내리고, 전선이 지나간 뒤에는 곧 소강상태가 됩니다.`;
+    summary = `강한 전선이 빠르게 이동하고 있습니다. 강도 ${strength} 수준의 저기압이 ${speed}의 속도로 이동하면 한 지역에는 비교적 짧은 시간 동안 강한 비가 내리고(최대 ${max}mm/h), 전선이 지나간 뒤에는 곧 소강상태가 됩니다.`;
   } else if (isSlow && isWarmSST && !isStrong) {
-    summary = `이동 속도가 느리고 해수면 온도가 높아 수증기 공급은 충분하지만, 저기압 자체의 힘이 약합니다. 따라서 전국적으로 고른 비보다는 특정 지역에 지속적으로 약~중간 강도의 비가 내리는 양상을 보입니다.`;
+    summary = `이동 속도가 느리고 해수면 온도가 높아 수증기 공급은 충분하지만, 저기압 자체의 힘이 약합니다. 따라서 전국적으로 고른 비보다는 특정 지역에 지속적으로 ${rainLevel} 비(평균 ${avg}mm/h)가 내리는 양상을 보입니다.`;
   } else if (isSouth) {
-    summary = `저기압 중심이 남쪽(${lat.toFixed(1)}°N)에 위치하고 있습니다. 이 경우 제주와 남부 지방에 강한 비가 집중되고, 중부 지방은 상대적으로 약한 영향을 받을 가능성이 큽니다.`;
+    summary = `저기압 중심이 남쪽(${lat.toFixed(1)}°N)에 위치하고 있습니다. 이 경우 제주와 남부 지방에 강한 비가 집중되고(최대 ${max}mm/h), 중부 지방은 상대적으로 약한 영향을 받을 가능성이 큽니다.`;
   } else if (isNorth) {
-    summary = `저기압이 북쪽에 위치해 있어 서울·경기와 강원 지역에 직접적인 영향을 주고 있습니다. 남부 지방은 전선의 후면에 위치해 비가 상대적으로 약할 수 있습니다.`;
+    summary = `저기압이 북쪽에 위치해 있어 서울·경기와 강원 지역에 직접적인 영향을 주고 있습니다(최대 ${max}mm/h). 남부 지방은 전선의 후면에 위치해 비가 상대적으로 약할 수 있습니다.`;
   } else {
-    summary = `현재 강도 ${strength}, 이동 속도 ${speed}, 해수면 온도 ${sst.toFixed(1)}°C 조건에서는 한반도 중부와 남부에 걸쳐 보통~강한 강수가 분포합니다. 전선의 위치와 강도가 비의 지역적 편차를 크게 결정하고 있습니다.`;
+    summary = `현재 강도 ${strength}, 이동 속도 ${speed}, 해수면 온도 ${sst.toFixed(1)}°C 조건에서 모델은 한반도 8개 도시에 평균 ${avg}mm/h(최대 ${max}mm/h)의 ${rainLevel} 강수를 예측합니다. 전선의 위치와 강도가 비의 지역적 편차를 크게 결정하고 있습니다.`;
   }
 
   // === COMPARISON: 실제 관측과의 차이 (역사적 사례 참조 강화) ===

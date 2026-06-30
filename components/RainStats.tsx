@@ -11,7 +11,7 @@ import { getRainColor } from '../lib/simulation';
 import { Droplet } from 'lucide-react';
 
 export default function RainStats() {
-  const { rainResults, averageRainfall, maxRainfall, params } = useJangmaStore();
+  const { rainResults, averageRainfall, maxRainfall } = useJangmaStore();
 
   // Recharts용 데이터 준비
   const chartData = rainResults.map((r) => ({
@@ -19,14 +19,6 @@ export default function RainStats() {
     rainfall: r.rainfall,
     fill: getRainColor(r.rainfall),
   }));
-
-  const getCategoryLabel = (rain: number) => {
-    if (rain < 2) return '없음';
-    if (rain < 10) return '약한 비';
-    if (rain < 30) return '보통';
-    if (rain < 55) return '강한 비';
-    return '극한 호우';
-  };
 
   return (
     <div className="bg-white border border-slate-200 rounded-2xl p-5 md:p-6 shadow-sm">

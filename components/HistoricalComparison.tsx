@@ -13,7 +13,7 @@ import { useState } from 'react';
 import { useJangmaStore } from '../store/useJangmaStore';
 import { HISTORICAL_CASES, compareWithHistorical } from '../lib/simulation';
 import { HistoricalCase } from '../lib/types';
-import { History, TrendingUp } from 'lucide-react';
+import { History } from 'lucide-react';
 
 export default function HistoricalComparison() {
   const { rainResults, averageRainfall, maxRainfall } = useJangmaStore();

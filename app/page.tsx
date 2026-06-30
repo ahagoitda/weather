@@ -27,7 +27,7 @@ import { useJangmaStore } from '../store/useJangmaStore';
 import { Info } from 'lucide-react';
 
 export default function JangmaFrontLab() {
-  const { params, averageRainfall } = useJangmaStore();
+  const { averageRainfall } = useJangmaStore();
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -70,7 +70,7 @@ export default function JangmaFrontLab() {
           </h1>
           <p className="mt-4 text-lg text-slate-600 max-w-2xl">
             한반도 지도 위에서 저기압을 드래그하고 강도·속도·해수면 온도를 조절하세요.<br />
-            실시간으로 변하는 강수 패턴과 AI가 설명하는 과학적 원리를 체험할 수 있습니다.
+            AI 서러게이트(대리) 모델이 강수 패턴을 실시간으로 추론하고, 그 결과를 과학적으로 해석해 줍니다.
           </p>
         </div>
       </div>
@@ -148,7 +148,7 @@ export default function JangmaFrontLab() {
             2026 기상·기후 AI 해커톤 경진대회 | 장마 전선 실험실
           </div>
           <div className="flex gap-4">
-            <span>실시간 JavaScript 물리 근사 모델</span>
+            <span>AI 서러게이트(대리) 모델 · 실시간 추론</span>
             <span className="hidden sm:inline">•</span>
             <span>교육 목적 시뮬레이션</span>
           </div>
