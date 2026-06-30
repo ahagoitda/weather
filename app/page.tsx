@@ -23,6 +23,8 @@ import FeedbackPanel from '../components/FeedbackPanel';
 import RainStats from '../components/RainStats';
 import HistoricalComparison from '../components/HistoricalComparison';
 import FactorAnalysis from '../components/FactorAnalysis';
+import ClimateScenario from '../components/ClimateScenario';
+import ChallengeMode from '../components/ChallengeMode';
 import { useJangmaStore } from '../store/useJangmaStore';
 import { Info } from 'lucide-react';
 
@@ -105,10 +107,12 @@ export default function JangmaFrontLab() {
           {/* 컨트롤 패널 */}
           <div className="lg:col-span-5 xl:col-span-4 space-y-5">
             <ParameterControls />
+            <ClimateScenario />
           </div>
 
-          {/* 피드백 + 통계 */}
+          {/* 챌린지 + 피드백 */}
           <div className="lg:col-span-12 xl:col-span-7 space-y-5">
+            <ChallengeMode />
             <FeedbackPanel />
           </div>
 
@@ -123,7 +127,7 @@ export default function JangmaFrontLab() {
         <div className="mt-10 pt-8 border-t border-slate-200">
           <div className="max-w-3xl">
             <h2 className="font-semibold text-xl mb-3 tracking-tight">이 도구로 무엇을 배울 수 있나요?</h2>
-            <div className="grid sm:grid-cols-3 gap-4 text-sm">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
               <div className="rounded-xl border bg-white p-4">
                 <div className="font-medium text-slate-800 mb-1">1. 정체의 위험성</div>
                 <div className="text-slate-600">전선이 느리게 움직일수록 같은 지역의 누적 강수량이 급격히 증가합니다.</div>
@@ -135,6 +139,10 @@ export default function JangmaFrontLab() {
               <div className="rounded-xl border bg-white p-4">
                 <div className="font-medium text-slate-800 mb-1">3. 위치의 중요성</div>
                 <div className="text-slate-600">저기압이 남쪽에 있으면 남부, 북쪽에 있으면 중북부에 집중되는 패턴을 직접 확인하세요.</div>
+              </div>
+              <div className="rounded-xl border bg-rose-50 border-rose-100 p-4">
+                <div className="font-medium text-rose-800 mb-1">4. 기후위기의 영향</div>
+                <div className="text-rose-700">바다가 더 따뜻해지는 미래에는 같은 전선이라도 장마가 더 강해진다는 것을 시나리오로 체감합니다.</div>
               </div>
             </div>
           </div>

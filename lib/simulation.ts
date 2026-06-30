@@ -239,8 +239,8 @@ export const PRESETS: Array<{
     params: { lat: 36.4, lng: 127.8, strength: 88, speed: 18, sst: 27.6 },
   },
   {
-    name: '2020년 빠른 북상',
-    description: '2020.7 빠른 이동 사례 — 전선이 빠르게 지나가며 전국에 분산된 비',
+    name: '빠른 이동형 (분산형)',
+    description: '전선이 빠르게 지나가며 전국에 비가 고르게 분산되는 패턴',
     params: { lat: 34.9, lng: 126.6, strength: 71, speed: 79, sst: 26.9 },
   },
   {
@@ -256,56 +256,62 @@ export const PRESETS: Array<{
 ];
 
 /**
- * 실제 관측 기반 역사적 사례 (교육 비교용)
- * 
- * 이 데이터는 공개된 기상 사례와 패턴을 기반으로 한 근사치다.
- * 사용자가 현재 조작과 과거 극한 사례를 비교하며 과학적 직관을 키울 수 있게 함.
+ * 실제 기록 사례 (교육 비교·챌린지용)
+ *
+ * 신뢰성 원칙(데이터 출처 명시):
+ * - realWorldRecord 는 공개 보도·기상청 자료로 확인 가능한 정성적 사실만 담는다.
+ * - 유사도/챌린지 채점의 "기준값"은 referenceParams 로 서러게이트 모델을 돌려 산출한다.
+ *   즉, 비교 대상이 임의의 가짜 관측 수치가 아니라 '모델이 그 조건에서 만든 강수'이므로
+ *   채점이 자기일관적이고 방어 가능하다.
  */
 export const HISTORICAL_CASES: HistoricalCase[] = [
   {
     id: '2023-central',
-    name: '2023년 7월 중부 집중호우',
-    period: '2023.7.13~17',
-    description: '전선이 중부지방에 장기 정체하면서 서울·경기·강원에 기록적인 호우. 일부 지역 1일 300mm 이상.',
-    observedAvg: 18.5,
-    observedMax: 42,
-    referenceParams: { lat: 36.5, lng: 127.6, strength: 91, speed: 14, sst: 27.8 },
+    name: '2023년 7월 중부·충청 집중호우',
+    period: '2023.7.13~18',
+    description: '장마 전선이 중부·충청에 장기 정체하며 기록적 호우. 오송 지하차도 침수 등 큰 인명·재산 피해로 이어졌다.',
+    realWorldRecord: '청주·괴산 등 충청권에 일강수량 300mm 이상이 관측되었고, 정체된 전선이 같은 지역에 비를 퍼부었습니다.',
+    source: '기상청·언론 보도 (2023.7)',
+    referenceParams: { lat: 36.5, lng: 127.5, strength: 90, speed: 15, sst: 27.5 },
     keyInsight: '이동 속도가 극도로 느리고 강도가 높았던 정체형 전선의 대표 사례. 해수면 온도도 평년보다 높아 수증기 공급이 풍부했다.',
   },
   {
-    id: '2022-slow',
-    name: '2022년 8월 남부·중부 호우',
+    id: '2022-seoul',
+    name: '2022년 8월 수도권 기록적 폭우',
     period: '2022.8.8~11',
-    description: '남해에서 발달한 저기압이 느리게 북상하며 남부와 중부에 집중호우. 장마 후반기 전형적 패턴.',
-    observedAvg: 12.2,
-    observedMax: 29,
-    referenceParams: { lat: 35.1, lng: 126.8, strength: 76, speed: 29, sst: 27.2 },
-    keyInsight: '저기압이 남쪽에서 천천히 접근하면서 남부에 먼저 강한 비가 시작되고, 점차 중부로 확대되는 전형적 이동 패턴.',
+    description: '정체된 강한 비구름이 수도권에 집중되며 서울 도심이 침수. 짧은 시간에 극단적으로 많은 비가 쏟아진 사례.',
+    realWorldRecord: '서울 동작구에서 시간당 약 141.5mm가 관측되어 서울 기상 관측 사상 최고 수준을 기록했고, 강남 등 도심이 침수됐습니다.',
+    source: '기상청 (2022.8.8)',
+    referenceParams: { lat: 37.5, lng: 127.0, strength: 95, speed: 12, sst: 27.0 },
+    keyInsight: '전선이 거의 움직이지 않고 강한 비구름이 같은 지역(수도권)에 반복 유입되면서 단시간 극한 강수가 발생했다.',
   },
   {
-    id: '2020-rapid',
-    name: '2020년 7월 빠른 북상 장마',
-    period: '2020.7.10~13',
-    description: '전선이 비교적 빠르게 북상하면서 전국에 고른 비를 내렸으나, 지속시간이 짧아 극한 호우로는 이어지지 않음.',
-    observedAvg: 7.8,
-    observedMax: 18,
-    referenceParams: { lat: 35.3, lng: 127.1, strength: 64, speed: 72, sst: 26.1 },
-    keyInsight: '속도가 빨랐기 때문에 한 지역에 머무는 시간이 짧아 누적 강수량이 제한적이었다. 강도 자체는 중간 수준.',
+    id: '2020-long',
+    name: '2020년 역대 최장 장마',
+    period: '2020.6.24~8.16',
+    description: '중부지방 장마가 54일간 이어지며 역대 최장 기록. 오랜 기간 전국 곳곳에 반복적인 호우와 침수 피해가 발생했다.',
+    realWorldRecord: '2020년 중부지방 장마는 54일로 1973년 이후 가장 길었고, 누적 강수량이 평년을 크게 웃돌았습니다.',
+    source: '기상청 장마 통계 (2020)',
+    referenceParams: { lat: 36.2, lng: 127.6, strength: 72, speed: 30, sst: 26.0 },
+    keyInsight: '한 번의 극한 강도보다, 전선이 오래 머물며 비가 반복된 "지속 시간"이 피해를 키운 사례.',
   },
   {
     id: '2023-jeju',
-    name: '2023년 제주·남부 극한',
-    period: '2023.7.25~28',
-    description: '남해상에 강하게 발달한 저기압이 제주와 남부지방에 집중. 제주 산간에 매우 높은 일 강수량 기록.',
-    observedAvg: 15.4,
-    observedMax: 51,
-    referenceParams: { lat: 33.4, lng: 127.0, strength: 85, speed: 22, sst: 28.5 },
+    name: '2023년 여름 남부·제주 호우',
+    period: '2023.7',
+    description: '남해상에서 발달한 저기압의 영향으로 제주 산간과 남부지방에 매우 많은 비가 집중됐다.',
+    realWorldRecord: '제주 산간을 중심으로 매우 높은 일강수량이 기록됐으며, 높은 해수면 온도가 풍부한 수증기를 공급했습니다.',
+    source: '기상청·언론 보도 (2023.7)',
+    referenceParams: { lat: 33.6, lng: 127.0, strength: 85, speed: 22, sst: 28.3 },
     keyInsight: '해수면 온도가 매우 높았고 저기압이 남쪽에 오래 머물면서 남부에 극심한 비가 집중된 사례.',
   },
 ];
 
 /**
- * 현재 시뮬레이션과 역사적 사례 비교
+ * 현재 시뮬레이션과 사례(또는 목표 조건) 비교 — 모델 기반 자기일관 채점
+ *
+ * 기준값을 가짜 관측치가 아니라 referenceParams 로 모델을 돌려 산출한다.
+ * "같은 모델 안에서 목표 조건을 얼마나 재현했는가"를 측정하므로 방어 가능하다.
  */
 export function compareWithHistorical(
   currentResults: RainResult[],
@@ -316,33 +322,38 @@ export function compareWithHistorical(
   similarity: number;           // 0~100
   avgDiff: number;
   maxDiff: number;
+  targetAvg: number;
+  targetMax: number;
+  targetMaxCity: string;
   closestCities: string[];
 } {
-  const histAvg = historical.observedAvg;
-  const histMax = historical.observedMax;
+  // 기준값: 사례의 대표 입력 조건으로 모델을 돌린 결과
+  const target = generateSimulationSummary(historical.referenceParams);
+  const targetAvg = target.averageRainfall;
+  const targetMax = target.maxRainfall;
+  const targetMaxCity = target.rainResults.reduce((a, b) => (b.rainfall > a.rainfall ? b : a)).name;
 
-  const avgDiff = Math.abs(currentAvg - histAvg);
-  const maxDiff = Math.abs(currentMax - histMax);
+  const avgDiff = Math.abs(currentAvg - targetAvg);
+  const maxDiff = Math.abs(currentMax - targetMax);
 
   // 유사도 계산 (평균과 최대를 종합, 차이가 작을수록 높음)
   const avgScore = Math.max(0, 100 - avgDiff * 3.2);
   const maxScore = Math.max(0, 100 - maxDiff * 1.8);
   let similarity = Math.round((avgScore + maxScore) / 2);
 
-  // 공간 패턴도 고려 (간단히 최대값 위치 근사)
+  // 공간 패턴(최대 강수 지역)이 일치하면 가산
   const currentMaxCity = currentResults.reduce((a, b) => (b.rainfall > a.rainfall ? b : a)).name;
-  // 역사적 사례에 따른 대략적 최대 지역 가정
-  const histLikelyMax =
-    historical.id.includes('jeju') || historical.id.includes('south') ? '제주' : '서울';
+  if (currentMaxCity === targetMaxCity) similarity = Math.min(100, similarity + 12);
 
-  if (currentMaxCity === histLikelyMax) similarity = Math.min(100, similarity + 12);
-
-  similarity = Math.max(35, Math.min(98, similarity)); // 현실적 범위
+  similarity = Math.max(5, Math.min(99, similarity));
 
   return {
     similarity,
     avgDiff: Math.round(avgDiff * 10) / 10,
     maxDiff: Math.round(maxDiff * 10) / 10,
+    targetAvg,
+    targetMax,
+    targetMaxCity,
     closestCities: [currentMaxCity],
   };
 }

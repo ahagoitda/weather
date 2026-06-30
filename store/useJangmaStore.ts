@@ -29,6 +29,10 @@ interface JangmaStore {
   maxRainfall: number;
   frontAngle: number;
 
+  // 기후변화 시나리오: 사용자가 설정한 해수면온도에 더해지는 미래 온난화량(°C)
+  // 0 = 현재 기후, +1.5 / +3.0 = 미래 시나리오
+  climateWarming: number;
+
   // UI 상태
   isDragging: boolean;
   lastUpdated: number;
@@ -39,6 +43,7 @@ interface JangmaStore {
   setPosition: (lat: number, lng: number) => void;
   setSliderValue: (key: keyof SimulationParams, value: number) => void;
   applyPreset: (presetName: string) => void;
+  setClimateWarming: (warming: number) => void;
   resetToDefault: () => void;
   setDragging: (dragging: boolean) => void;
 
@@ -51,8 +56,12 @@ interface JangmaStore {
   };
 }
 
-function recompute(params: SimulationParams) {
-  const rainResults = calculateAllRainfall(params);
+// 기후 온난화량을 반영한 '실효' 입력으로 모델을 돌린다.
+// 미래 시나리오에서는 같은 전선이라도 더 따뜻한 바다 → 더 많은 수증기 → 강한 강수.
+function recompute(params: SimulationParams, climateWarming: number = 0) {
+  const effective: SimulationParams =
+    climateWarming === 0 ? params : { ...params, sst: params.sst + climateWarming };
+  const rainResults = calculateAllRainfall(effective);
   const averageRainfall = calculateAverageRainfall(rainResults);
   const maxRainfall = calculateMaxRainfall(rainResults);
   const frontAngle = calculateFrontAngle(params.speed, params.strength);
@@ -62,7 +71,7 @@ function recompute(params: SimulationParams) {
 
 export const useJangmaStore = create<JangmaStore>((set, get) => {
   // 초기 계산
-  const initial = recompute(DEFAULT_PARAMS);
+  const initial = recompute(DEFAULT_PARAMS, 0);
 
   return {
     // 초기 상태
@@ -71,6 +80,7 @@ export const useJangmaStore = create<JangmaStore>((set, get) => {
     averageRainfall: initial.averageRainfall,
     maxRainfall: initial.maxRainfall,
     frontAngle: initial.frontAngle,
+    climateWarming: 0,
     isDragging: false,
     lastUpdated: Date.now(),
     selectedPreset: null,
@@ -79,7 +89,7 @@ export const useJangmaStore = create<JangmaStore>((set, get) => {
     updateParams: (newParams) => {
       const current = get().params;
       const updated: SimulationParams = { ...current, ...newParams };
-      const computed = recompute(updated);
+      const computed = recompute(updated, get().climateWarming);
 
       set({
         params: updated,
@@ -97,7 +107,7 @@ export const useJangmaStore = create<JangmaStore>((set, get) => {
         lat: Math.max(32.5, Math.min(39.5, lat)), // 한반도 영역 제한
         lng: Math.max(124.5, Math.min(131.5, lng)),
       };
-      const computed = recompute(updated);
+      const computed = recompute(updated, get().climateWarming);
 
       set({
         params: updated,
@@ -111,7 +121,7 @@ export const useJangmaStore = create<JangmaStore>((set, get) => {
     setSliderValue: (key, value) => {
       const current = get().params;
       const updated: SimulationParams = { ...current, [key]: value };
-      const computed = recompute(updated);
+      const computed = recompute(updated, get().climateWarming);
 
       set({
         params: updated,
@@ -126,7 +136,7 @@ export const useJangmaStore = create<JangmaStore>((set, get) => {
       const preset = PRESETS.find((p) => p.name === presetName);
       if (!preset) return;
 
-      const computed = recompute(preset.params);
+      const computed = recompute(preset.params, get().climateWarming);
 
       set({
         params: { ...preset.params },
@@ -136,12 +146,23 @@ export const useJangmaStore = create<JangmaStore>((set, get) => {
       });
     },
 
+    // 기후변화 시나리오 변경 (현재 전선은 그대로, 미래 해양 상태만 반영)
+    setClimateWarming: (warming) => {
+      const computed = recompute(get().params, warming);
+      set({
+        climateWarming: warming,
+        ...computed,
+        lastUpdated: Date.now(),
+      });
+    },
+
     // 초기화
     resetToDefault: () => {
-      const computed = recompute(DEFAULT_PARAMS);
+      const computed = recompute(DEFAULT_PARAMS, 0);
       set({
         params: { ...DEFAULT_PARAMS },
         ...computed,
+        climateWarming: 0,
         lastUpdated: Date.now(),
         selectedPreset: null,
       });

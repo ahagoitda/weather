@@ -63,13 +63,19 @@ export interface SliderConfig {
 }
 
 // 과거 실제 사례 (교육적 비교용)
+//
+// 신뢰성 원칙: 시간당 mm 같은 정밀 수치를 임의로 "관측치"라 단정하지 않는다.
+// - realWorldRecord: 공개 보도·기상청 자료로 확인 가능한 정성적 사실만 기재
+// - source: 출처 표기
+// - referenceParams: 이 사례를 서러게이트 모델에서 재현하는 대표 입력 조건
+//   (유사도 채점의 기준값은 이 입력으로 모델을 돌려 산출 → 자기일관적)
 export interface HistoricalCase {
   id: string;
   name: string;           // 예: "2023년 7월 중부 집중호우"
-  period: string;         // "2023.7.13~17"
+  period: string;         // "2023.7.13~18"
   description: string;    // 간단한 실제 상황 요약
-  observedAvg: number;    // 대략 관측된 평균 강수 강도 (mm/h 근사)
-  observedMax: number;    // 관측 최대 (주요 지역)
-  referenceParams: SimulationParams; // 대략 이 조건에서 발생한 패턴
+  realWorldRecord: string; // 공개 기록 기반 실제 관측 사실 (정성적)
+  source: string;          // 출처 표기 (예: "기상청·언론 보도")
+  referenceParams: SimulationParams; // 모델 재현용 대표 입력 조건
   keyInsight: string;     // 이 사례의 핵심 과학적 특징
 }

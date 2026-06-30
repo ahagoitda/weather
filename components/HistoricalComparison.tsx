@@ -65,6 +65,11 @@ export default function HistoricalComparison() {
       <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 mb-4">
         <div className="font-medium text-slate-800 mb-1">{selectedCase.name}</div>
         <div className="text-sm text-slate-600 leading-snug">{selectedCase.description}</div>
+        <div className="mt-2 rounded-lg bg-white border border-slate-200 p-2.5">
+          <div className="text-[11px] font-semibold text-slate-500 mb-0.5">실제 기록</div>
+          <div className="text-xs text-slate-700 leading-snug">{selectedCase.realWorldRecord}</div>
+          <div className="text-[10px] text-slate-400 mt-1">출처: {selectedCase.source}</div>
+        </div>
         <div className="mt-2 text-xs text-indigo-700 font-medium">
           핵심: {selectedCase.keyInsight}
         </div>
@@ -95,13 +100,14 @@ export default function HistoricalComparison() {
         </div>
 
         <div className="text-xs text-slate-500 pt-1">
-          관측치(근사): 평균 {selectedCase.observedAvg} mm/h / 최대 {selectedCase.observedMax} mm/h
+          모델 재현 기준값: 평균 {comparison.targetAvg} mm/h / 최대 {comparison.targetMax} mm/h
+          <span className="text-slate-400"> (최대 예상 지역: {comparison.targetMaxCity})</span>
         </div>
       </div>
 
       <div className="mt-4 pt-4 border-t border-slate-100 text-[11px] text-slate-500 leading-snug">
-        ※ 실제 기상청 관측값과 현재 시뮬레이션의 공간 패턴·강도를 비교한 근사 결과입니다. 
-        정체 속도와 해수면 온도가 실제 사례와 가까울수록 유사도가 높아집니다.
+        ※ 유사도는 사례의 대표 조건으로 <b>같은 모델을 돌린 기준값</b>과 현재 조작 결과를 비교한 값입니다.
+        실제 관측 수치가 아니라 모델 내 재현도를 나타내며, 정체 속도·해수면 온도가 사례에 가까울수록 높아집니다.
       </div>
     </div>
   );
